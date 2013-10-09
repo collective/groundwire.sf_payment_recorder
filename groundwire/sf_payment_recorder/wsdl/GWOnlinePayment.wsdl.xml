@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Web Services API : GW_WEBSVC_OnlinePayment
+-->
+<definitions targetNamespace="http://soap.sforce.com/schemas/class/GW_WEBSVC_OnlinePayment" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://soap.sforce.com/schemas/class/GW_WEBSVC_OnlinePayment">
+ <types xmlns:MatchResult="http://soap.sforce.com/schemas/class/OnlinePayment">
+  <xsd:schema elementFormDefault="qualified" targetNamespace="http://soap.sforce.com/schemas/class/OnlinePayment">
+   <xsd:simpleType name="MatchResult">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="ACCOUNT_MATCH"/>
+     <xsd:enumeration value="CONTACT_MATCH"/>
+     <xsd:enumeration value="NEW_ACCOUNT"/>
+     <xsd:enumeration value="NEW_CONTACT"/>
+     <xsd:enumeration value="TRANSACTION_MATCH"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="PaymentStatus">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="AUTHORIZED"/>
+     <xsd:enumeration value="COMPLETED"/>
+     <xsd:enumeration value="DECLINED"/>
+     <xsd:enumeration value="FAILED"/>
+     <xsd:enumeration value="PENDING"/>
+     <xsd:enumeration value="REVERSED"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="PaymentType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="CREDITCARD"/>
+     <xsd:enumeration value="ECHECK"/>
+     <xsd:enumeration value="EFT"/>
+     <xsd:enumeration value="INSTANT"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="Processor">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="AUTHNET"/>
+     <xsd:enumeration value="OTHER"/>
+     <xsd:enumeration value="PAYPAL"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="RecurringPeriod">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="DAY"/>
+     <xsd:enumeration value="MONTH"/>
+     <xsd:enumeration value="WEEK"/>
+     <xsd:enumeration value="YEAR"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+  </xsd:schema>
+  <xsd:schema elementFormDefault="qualified" targetNamespace="http://soap.sforce.com/schemas/class/GW_WEBSVC_OnlinePayment">
+   <xsd:import namespace="http://soap.sforce.com/schemas/class/OnlinePayment"/>
+   <xsd:element name="DebuggingInfo">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="debugLog" type="xsd:string"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:simpleType name="ID">
+    <xsd:restriction base="xsd:string">
+     <xsd:length value="18"/>
+     <xsd:pattern value="[a-zA-Z0-9]{18}"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="LogCategory">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="Db"/>
+     <xsd:enumeration value="Workflow"/>
+     <xsd:enumeration value="Validation"/>
+     <xsd:enumeration value="Callout"/>
+     <xsd:enumeration value="Apex_code"/>
+     <xsd:enumeration value="Apex_profiling"/>
+     <xsd:enumeration value="Visualforce"/>
+     <xsd:enumeration value="All"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="LogCategoryLevel">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="Internal"/>
+     <xsd:enumeration value="Finest"/>
+     <xsd:enumeration value="Finer"/>
+     <xsd:enumeration value="Fine"/>
+     <xsd:enumeration value="Debug"/>
+     <xsd:enumeration value="Info"/>
+     <xsd:enumeration value="Warn"/>
+     <xsd:enumeration value="Error"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="LogInfo">
+    <xsd:sequence>
+     <xsd:element name="category" type="tns:LogCategory"/>
+     <xsd:element name="level" type="tns:LogCategoryLevel"/>
+    </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="LogType">
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="None"/>
+     <xsd:enumeration value="Debugonly"/>
+     <xsd:enumeration value="Db"/>
+     <xsd:enumeration value="Profiling"/>
+     <xsd:enumeration value="Callout"/>
+     <xsd:enumeration value="Detail"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:element name="DebuggingHeader">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="categories" minOccurs="0" maxOccurs="unbounded" type="tns:LogInfo"/>
+      <xsd:element name="debugLevel" type="tns:LogType"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="CallOptions">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="client" type="xsd:string"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="SessionHeader">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="sessionId" type="xsd:string"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="AllowFieldTruncationHeader">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="allowFieldTruncation" type="xsd:boolean"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:complexType name="Item">
+    <xsd:sequence>
+     <xsd:element name="amount" minOccurs="0" type="xsd:decimal" nillable="true"/>
+     <xsd:element name="code" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="discountcode" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="name" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="quantity" minOccurs="0" type="xsd:int" nillable="true"/>
+    </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="PaymentInfo">
+    <xsd:sequence>
+     <xsd:element name="accountId" minOccurs="0" type="tns:ID" nillable="true"/>
+     <xsd:element name="cardType" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="city" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="companyIsPayer" minOccurs="0" type="xsd:boolean" nillable="true"/>
+     <xsd:element name="companyName" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="contactId" minOccurs="0" type="tns:ID" nillable="true"/>
+     <xsd:element name="country" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="currencyCode" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="custom" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="email" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="exchangeRate" minOccurs="0" type="xsd:decimal" nillable="true"/>
+     <xsd:element name="fee" minOccurs="0" type="xsd:decimal" nillable="true"/>
+     <xsd:element name="firstName" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="frequency" minOccurs="0" type="xsd:int" nillable="true"/>
+     <xsd:element name="invoice" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="itemList" minOccurs="0" maxOccurs="unbounded" type="tns:Item" nillable="true"/>
+     <xsd:element name="last4digits" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="lastName" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="memo" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="occurrences" minOccurs="0" type="xsd:int" nillable="true"/>
+     <xsd:element name="opportunityId" minOccurs="0" type="tns:ID" nillable="true"/>
+     <xsd:element name="parentTxnId" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="payerId" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="payerMatchResult" minOccurs="0" type="MatchResult:MatchResult" nillable="true"/>
+     <xsd:element name="paymentResponse" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="phone" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="pmtPeriod" minOccurs="0" type="MatchResult:RecurringPeriod" nillable="true"/>
+     <xsd:element name="pmtProcessor" minOccurs="0" type="MatchResult:Processor" nillable="true"/>
+     <xsd:element name="pmtStatus" minOccurs="0" type="MatchResult:PaymentStatus" nillable="true"/>
+     <xsd:element name="pmtType" minOccurs="0" type="MatchResult:PaymentType" nillable="true"/>
+     <xsd:element name="priceBook" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="reasonCode" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="recurringTxnId" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="shipping" minOccurs="0" type="xsd:decimal" nillable="true"/>
+     <xsd:element name="startDate" minOccurs="0" type="xsd:date" nillable="true"/>
+     <xsd:element name="state" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="street" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="tax" minOccurs="0" type="xsd:decimal" nillable="true"/>
+     <xsd:element name="totalAmount" minOccurs="0" type="xsd:decimal" nillable="true"/>
+     <xsd:element name="txnId" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="zip" minOccurs="0" type="xsd:string" nillable="true"/>
+    </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="Response">
+    <xsd:sequence>
+     <xsd:element name="errorMessage" minOccurs="0" type="xsd:string" nillable="true"/>
+     <xsd:element name="payment" minOccurs="0" type="tns:PaymentInfo" nillable="true"/>
+     <xsd:element name="success" minOccurs="0" type="xsd:boolean" nillable="true"/>
+    </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="cancelRecurringPayments">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="payment" type="tns:PaymentInfo" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="cancelRecurringPaymentsResponse">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="result" type="tns:Response" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="processRecurringPayment">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="payment" type="tns:PaymentInfo" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="processRecurringPaymentResponse">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="result" type="tns:Response" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="processSinglePayment">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="payment" type="tns:PaymentInfo" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="processSinglePaymentResponse">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="result" type="tns:Response" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="setPayer">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="payment" type="tns:PaymentInfo" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="setPayerResponse">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="result" type="tns:Response" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="startRecurringPayments">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="payment" type="tns:PaymentInfo" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="startRecurringPaymentsResponse">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="result" type="tns:Response" nillable="true"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+  </xsd:schema>
+ </types>
+ <!-- Message for the header parts -->
+ <message name="Header">
+  <part name="AllowFieldTruncationHeader" element="tns:AllowFieldTruncationHeader"/>
+  <part name="CallOptions" element="tns:CallOptions"/>
+  <part name="DebuggingHeader" element="tns:DebuggingHeader"/>
+  <part name="DebuggingInfo" element="tns:DebuggingInfo"/>
+  <part name="SessionHeader" element="tns:SessionHeader"/>
+ </message>
+ <!-- Operation Messages -->
+ <message name="cancelRecurringPaymentsRequest">
+  <part element="tns:cancelRecurringPayments" name="parameters"/>
+ </message>
+ <message name="cancelRecurringPaymentsResponse">
+  <part element="tns:cancelRecurringPaymentsResponse" name="parameters"/>
+ </message>
+ <message name="processRecurringPaymentRequest">
+  <part element="tns:processRecurringPayment" name="parameters"/>
+ </message>
+ <message name="processRecurringPaymentResponse">
+  <part element="tns:processRecurringPaymentResponse" name="parameters"/>
+ </message>
+ <message name="processSinglePaymentRequest">
+  <part element="tns:processSinglePayment" name="parameters"/>
+ </message>
+ <message name="processSinglePaymentResponse">
+  <part element="tns:processSinglePaymentResponse" name="parameters"/>
+ </message>
+ <message name="setPayerRequest">
+  <part element="tns:setPayer" name="parameters"/>
+ </message>
+ <message name="setPayerResponse">
+  <part element="tns:setPayerResponse" name="parameters"/>
+ </message>
+ <message name="startRecurringPaymentsRequest">
+  <part element="tns:startRecurringPayments" name="parameters"/>
+ </message>
+ <message name="startRecurringPaymentsResponse">
+  <part element="tns:startRecurringPaymentsResponse" name="parameters"/>
+ </message>
+ <portType name="GW_WEBSVC_OnlinePaymentPortType">
+  <operation name="cancelRecurringPayments">
+   <input message="tns:cancelRecurringPaymentsRequest"/>
+   <output message="tns:cancelRecurringPaymentsResponse"/>
+  </operation>
+  <operation name="processRecurringPayment">
+   <input message="tns:processRecurringPaymentRequest"/>
+   <output message="tns:processRecurringPaymentResponse"/>
+  </operation>
+  <operation name="processSinglePayment">
+   <input message="tns:processSinglePaymentRequest"/>
+   <output message="tns:processSinglePaymentResponse"/>
+  </operation>
+  <operation name="setPayer">
+   <input message="tns:setPayerRequest"/>
+   <output message="tns:setPayerResponse"/>
+  </operation>
+  <operation name="startRecurringPayments">
+   <input message="tns:startRecurringPaymentsRequest"/>
+   <output message="tns:startRecurringPaymentsResponse"/>
+  </operation>
+ </portType>
+ <binding name="GW_WEBSVC_OnlinePaymentBinding" type="tns:GW_WEBSVC_OnlinePaymentPortType">
+  <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+  <operation name="cancelRecurringPayments">
+   <soap:operation soapAction=""/>
+   <input>
+    <soap:header use="literal" part="SessionHeader" message="tns:Header"/>
+    <soap:header use="literal" part="CallOptions" message="tns:Header"/>
+    <soap:header use="literal" part="DebuggingHeader" message="tns:Header"/>
+    <soap:header use="literal" part="AllowFieldTruncationHeader" message="tns:Header"/>
+    <soap:body use="literal" parts="parameters"/>
+   </input>
+   <output>
+    <soap:header use="literal" part="DebuggingInfo" message="tns:Header"/>
+    <soap:body use="literal"/>
+   </output>
+  </operation>
+  <operation name="processRecurringPayment">
+   <soap:operation soapAction=""/>
+   <input>
+    <soap:header use="literal" part="SessionHeader" message="tns:Header"/>
+    <soap:header use="literal" part="CallOptions" message="tns:Header"/>
+    <soap:header use="literal" part="DebuggingHeader" message="tns:Header"/>
+    <soap:header use="literal" part="AllowFieldTruncationHeader" message="tns:Header"/>
+    <soap:body use="literal" parts="parameters"/>
+   </input>
+   <output>
+    <soap:header use="literal" part="DebuggingInfo" message="tns:Header"/>
+    <soap:body use="literal"/>
+   </output>
+  </operation>
+  <operation name="processSinglePayment">
+   <soap:operation soapAction=""/>
+   <input>
+    <soap:header use="literal" part="SessionHeader" message="tns:Header"/>
+    <soap:header use="literal" part="CallOptions" message="tns:Header"/>
+    <soap:header use="literal" part="DebuggingHeader" message="tns:Header"/>
+    <soap:header use="literal" part="AllowFieldTruncationHeader" message="tns:Header"/>
+    <soap:body use="literal" parts="parameters"/>
+   </input>
+   <output>
+    <soap:header use="literal" part="DebuggingInfo" message="tns:Header"/>
+    <soap:body use="literal"/>
+   </output>
+  </operation>
+  <operation name="setPayer">
+   <soap:operation soapAction=""/>
+   <input>
+    <soap:header use="literal" part="SessionHeader" message="tns:Header"/>
+    <soap:header use="literal" part="CallOptions" message="tns:Header"/>
+    <soap:header use="literal" part="DebuggingHeader" message="tns:Header"/>
+    <soap:header use="literal" part="AllowFieldTruncationHeader" message="tns:Header"/>
+    <soap:body use="literal" parts="parameters"/>
+   </input>
+   <output>
+    <soap:header use="literal" part="DebuggingInfo" message="tns:Header"/>
+    <soap:body use="literal"/>
+   </output>
+  </operation>
+  <operation name="startRecurringPayments">
+   <soap:operation soapAction=""/>
+   <input>
+    <soap:header use="literal" part="SessionHeader" message="tns:Header"/>
+    <soap:header use="literal" part="CallOptions" message="tns:Header"/>
+    <soap:header use="literal" part="DebuggingHeader" message="tns:Header"/>
+    <soap:header use="literal" part="AllowFieldTruncationHeader" message="tns:Header"/>
+    <soap:body use="literal" parts="parameters"/>
+   </input>
+   <output>
+    <soap:header use="literal" part="DebuggingInfo" message="tns:Header"/>
+    <soap:body use="literal"/>
+   </output>
+  </operation>
+ </binding>
+ <service name="GW_WEBSVC_OnlinePaymentService">
+  <documentation></documentation>
+  <port binding="tns:GW_WEBSVC_OnlinePaymentBinding" name="GW_WEBSVC_OnlinePayment">
+   <soap:address location="https://na10-api.salesforce.com/services/Soap/class/GW_WEBSVC_OnlinePayment"/>
+  </port>
+ </service>
+</definitions>

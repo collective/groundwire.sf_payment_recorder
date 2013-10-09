@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
+  
+  <include package="plone.app.registry"/>
+  
+  <genericsetup:registerProfile
+    name="default"
+    title="Groundwire Salesforce Payment Recorder"
+    directory="profiles/default"
+    description="Records GetPaid payments to Salesforce"
+    provides="Products.GenericSetup.interfaces.EXTENSION"
+    />
+  
+  <subscriber handler=".dispatch.handle_getpaid_workflow_transition"/>
+
+</configure>

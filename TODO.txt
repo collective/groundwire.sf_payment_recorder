@@ -1,0 +1,2 @@
+- how to test?
+- avoid need to call login every time

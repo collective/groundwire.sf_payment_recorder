@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<registry>
+  <records interface="groundwire.sf_payment_recorder.interfaces.ISalesforcePaymentRecorderSettings"/>
+  
+  <records interface="collective.salesforce.credentials.interfaces.ISalesforceWebservice"
+           prefix="collective.salesforce.credentials.webservices/GWOnlinePayment">
+    <value key="endpoint">https://na4-api.salesforce.com/services/Soap/class/GW_WEBSVC_OnlinePayment</value>
+    <value key="wsdl">groundwire.sf_payment_recorder:wsdl/GWOnlinePayment.wsdl.xml</value>
+  </records>
+</registry>

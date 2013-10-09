@@ -1,0 +1,65 @@
+Changelog
+=========
+
+2.0 (unreleased)
+----------------
+
+- If the cart has a getpaid_formgen_data attribute, use it as the start of the
+  custom dictionary passed to Salesforce.
+  [davisagli - 2012-07-24]
+
+- Adjust the split_name logic to remove middle initials.
+  [davisagli - 2012-05-11]
+
+- Log details of successfully logged payments to aid in debugging.
+  [davisagli - 2011-12-12]
+
+- Handle dates in custom fields.
+  [yomatters - 2011-10-07]
+
+- Add option to control whether to submit the country when it is United States.
+  Defaults to False.
+  [davisagli - 2011-09-30]
+
+- Don't submit the country if it is United States.
+  [yomatters - 2011-08-01]
+
+- Added ICustomFieldUpdatingLineItem interface to allow line items to write
+  custom fields to Salesforce.
+  [yomatters - 2011-07-28]
+
+- Include PaymentInfo instance when emailing an error report.
+  [davisagli - 2011-07-12]
+
+- Only fire OrderRecordedEvent if the call succeeded.
+  [davisagli - 2011-07-12]
+
+- Switch to use collective.salesforce.credentials for storing credentials.
+  [davisagli - 2011-07-11]
+
+1.0 (unreleased)
+----------------
+
+- Added IOrderRecordedEvent to fire after successful order.
+  [davisagli - 2011-06-14]
+
+- Fix itemsList (the items actually get appended now).
+  [davisagli - 2011-06-09]
+
+- Record a contactId if the GetPaid contact information has an sf_id attribute.
+  [davisagli - 2011-06-09]
+
+- Give cart line items an opportunity to update the Salesforce line item
+  before it is sent to the webservice.  Line items that want to do this must
+  implement ISalesforceUpdatingLineItem.
+  [davisagli - 2011-06-09]
+
+- Pass the "DECLINED" pmtStatus when payment fails due to the card being
+  declined.
+  [davisagli - 2011-05-24]
+
+- Handle separate first/last name on the order contact information if it
+  happens to be available that way.
+  [davisagli - 2011-05-24]
+
+- Initial release
