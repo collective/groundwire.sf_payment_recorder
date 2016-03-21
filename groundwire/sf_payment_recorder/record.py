@@ -67,7 +67,8 @@ def record_order(order):
     annotations = IAnnotations(order)
     pmt.last4digits = annotations.get('getpaid.authorizedotnet.cc_last_four', '')
     full_response = annotations.get('getpaid.authorizedotnet.full_response', '')
-    pmt.paymentResponse = full_response
+    # strip byte order mark if it's there
+    pmt.paymentResponse = full_response.strip('\xef\xbb\xbf')
 
     # status
     if order.finance_state == workflow_states.order.finance.CHARGED:
